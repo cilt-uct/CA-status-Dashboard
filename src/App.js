@@ -8,7 +8,7 @@ import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import Table from 'react-bootstrap/Table'
 import Image from 'react-bootstrap/Image'
-import base64 from 'base-64';
+import {encode} from 'base-64';
 import * as loginData from './login.json';
 import './App.css';
 
@@ -39,7 +39,9 @@ class App extends Component {
       };
 
       var headers = new Headers();
-      headers.set("Authorization", "Basic " + base64.encode(loginData.username + ":" + loginData.password));
+      console.log(loginData.username);
+      console.log(loginData.password);
+      headers.set("Authorization", "Basic " + encode(loginData.username + ":" + loginData.password));
 
       setInterval(async () => {
         const res = fetch('https://media.uct.ac.za/admin-ng/capture-agents/agents.json', {method:'GET', headers: headers});
