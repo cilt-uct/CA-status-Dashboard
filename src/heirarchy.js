@@ -1,0 +1,11 @@
+const heirarchy = {
+    1: "AGENTS.STATUS.CAPTURING",
+    2: "AGENTS.STATUS.UPLOADING",
+    3: "AGENTS.STATUS.IDLE",
+    4: "AGENTS.STATUS.ERROR",
+    5: "AGENTS.STATUS.OFFLINE",
+    6: "AGENTS.STATUS.SHUTTING_DOWN",
+    7: "AGENTS.STATUS.UNKNOWN",
+  };
+
+  export default heirarchy;

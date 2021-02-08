@@ -10,6 +10,7 @@ import Table from 'react-bootstrap/Table'
 import Image from 'react-bootstrap/Image'
 import {encode} from 'base-64';
 import * as loginData from './login.json';
+import heirarchy from './heirarchy.js'
 import './App.css';
 
 class App extends Component { 
@@ -28,47 +29,43 @@ class App extends Component {
 
     try {
 
-      const heirarchy = {
-        1: "AGENTS.STATUS.CAPTURING",
-        2: "AGENTS.STATUS.UPLOADING",
-        3: "AGENTS.STATUS.IDLE",
-        4: "AGENTS.STATUS.ERROR",
-        5: "AGENTS.STATUS.OFFLINE",
-        6: "AGENTS.STATUS.SHUTTING_DOWN",
-        7: "AGENTS.STATUS.UNKNOWN",
-      };
-
       var headers = new Headers();
-      console.log(loginData.username);
-      console.log(loginData.password);
+      headers.set('Content-Type', 'application/json');
+      headers.set('Accept', 'application/json');
       headers.set("Authorization", "Basic " + encode(loginData.username + ":" + loginData.password));
 
+      this.updateCAs(headers)
+
       setInterval(async () => {
-        const res = fetch('https://media.uct.ac.za/admin-ng/capture-agents/agents.json', {method:'GET', headers: headers});
-        const agents = await res.json();
-
-        var all_venues = [];
-
-        agents.results.forEach((result) => {
-          all_venues.push(result.Name);
-        });
-
-        agents.results.sort(function (a,b){
-          const statusA = Object.keys(heirarchy)[Object.values(heirarchy).indexOf(a.Status)]
-          const statusB = Object.keys(heirarchy)[Object.values(heirarchy).indexOf(b.Status)]
-          return statusA - statusB
-        });
-
-        this.setState({
-          agents: agents,
-          filteredAgents: agents.results,
-          venues: all_venues,
-        });
+        this.updateCAs(headers);
       }, 60000);
 
     } catch(e) {
       console.log(e);
     }
+  }
+
+  async updateCAs(headers) {
+    const res = fetch('https://media.uct.ac.za/admin-ng/capture-agents/agents.json', {method:'GET', headers: headers});
+    const agents = await res.json();
+
+    var all_venues = [];
+
+    agents.results.forEach((result) => {
+      all_venues.push(result.Name);
+    });
+
+    agents.results.sort(function (a,b){
+      const statusA = Object.keys(heirarchy)[Object.values(heirarchy).indexOf(a.Status)]
+      const statusB = Object.keys(heirarchy)[Object.values(heirarchy).indexOf(b.Status)]
+      return statusA - statusB
+    });
+
+    this.setState({
+      agents: agents,
+      filteredAgents: agents.results,
+      venues: all_venues,
+    });
   }
 
   onSort(event, sortKey){
