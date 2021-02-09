@@ -10,6 +10,7 @@ import Table from 'react-bootstrap/Table'
 import Image from 'react-bootstrap/Image'
 import {encode} from 'base-64';
 import * as loginData from './login.json';
+import * as DigestFetch from "digest-fetch"
 import heirarchy from './heirarchy.js'
 import './App.css';
 
@@ -46,8 +47,14 @@ class App extends Component {
   }
 
   async updateCAs(headers) {
-    const res = fetch('https://media.uct.ac.za/admin-ng/capture-agents/agents.json', {method:'GET', headers: headers});
-    const agents = await res.json();
+    var agents = [];
+    const options = {};
+
+    const client = new DigestFetch(loginData.username, loginData.password)
+    client.fetch('https://media.uct.ac.za/admin-ng/capture-agents/agents.json', options)
+    .then(resp=>resp.json())
+    .then(data=>agents = data)
+    .catch(e=>console.error(e))
 
     var all_venues = [];
 
