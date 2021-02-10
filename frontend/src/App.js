@@ -8,9 +8,6 @@ import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import Table from 'react-bootstrap/Table'
 import Image from 'react-bootstrap/Image'
-import {encode} from 'base-64';
-import * as loginData from './login.json';
-import * as DigestFetch from "digest-fetch"
 import heirarchy from './heirarchy.js'
 import './App.css';
 
@@ -30,15 +27,10 @@ class App extends Component {
 
     try {
 
-      var headers = new Headers();
-      headers.set('Content-Type', 'application/json');
-      headers.set('Accept', 'application/json');
-      headers.set("Authorization", "Basic " + encode(loginData.username + ":" + loginData.password));
-
-      this.updateCAs(headers)
+      await this.updateCAs()
 
       setInterval(async () => {
-        this.updateCAs(headers);
+        await this.updateCAs();
       }, 60000);
 
     } catch(e) {
@@ -46,15 +38,19 @@ class App extends Component {
     }
   }
 
-  async updateCAs(headers) {
+  async updateCAs() {
     var agents = [];
-    const options = {};
 
-    const client = new DigestFetch(loginData.username, loginData.password)
-    client.fetch('https://media.uct.ac.za/admin-ng/capture-agents/agents.json', options)
-    .then(resp=>resp.json())
-    .then(data=>agents = data)
-    .catch(e=>console.error(e))
+    var requestOptions = {
+      method: 'GET',
+      headers: {
+      }
+    };
+    
+    await fetch("http://127.0.0.1:8000/agents", requestOptions)
+      .then(response => response.text())
+      .then(result => {agents = JSON.parse(result)})
+      .catch(error => console.log('error', error));
 
     var all_venues = [];
 
@@ -122,7 +118,7 @@ class App extends Component {
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mr-auto"/>
             <Form> 
-              <Button>Refresh</Button>
+              <Button onClick={this.updateCAs.bind(this)}>Refresh</Button>
             </Form>
           </Navbar.Collapse>
         </Navbar>
