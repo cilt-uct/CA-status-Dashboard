@@ -22,13 +22,19 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-## Create credentials file
+## Create credentials file in the backend
 
-Create a file called login.json in the src folder and copy and past the json below replaced "testing" with appropriate media credenitals :
+Create a file called config.py in the src folder and copy and past the text below replaced "testing" with appropriate media credenitals :
 
 ```json
-{
+DIGEST_AUTH = {
     "username": "testing",
     "password": "testing"
 }
+
+CAPTURE_AGENT_URL = "https://stable.opencast.org/capture-admin/agents.json"
 ```
+
+## Starting up the backend
+
+Run python3 manage.py runserver
