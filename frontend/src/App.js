@@ -9,12 +9,16 @@ import Form from 'react-bootstrap/Form'
 import Table from 'react-bootstrap/Table'
 import Image from 'react-bootstrap/Image'
 import heirarchy from './heirarchy.js'
+import * as config from './config.json';
+import * as ca_names from './caNames.json';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSort } from '@fortawesome/free-solid-svg-icons'
 import './App.css';
 
 class App extends Component { 
 
   state = {
-    gents: [],
+    agents: [],
     filteredAgents: [],
     venues: [],
     statuses: [],
@@ -44,14 +48,15 @@ class App extends Component {
     var requestOptions = {
       method: 'GET',
       headers: {
+        'Content-Type': 'application/json',
       }
     };
-    
-    await fetch("http://127.0.0.1:8000/agents", requestOptions)
+
+    await fetch(config.agent_endpoint, requestOptions)
       .then(response => response.text())
       .then(result => {agents = JSON.parse(result)})
       .catch(error => console.log('error', error));
-
+    
     var all_venues = [];
 
     agents.results.forEach((result) => {
@@ -102,9 +107,20 @@ class App extends Component {
     })
   }
 
+  handleClear() {    
+    this.setState({
+      filteredAgents: this.state.agents.results,
+    })
+  }
+
   normaliseStatus(status) {
     var splitStatus = status.split(".");
     return splitStatus[2].charAt(0) + splitStatus[2].slice(1).toLowerCase()
+  }
+  
+  normaliseDate(date) {
+    var d = new Date(date);
+    return d.toDateString() + " " + d.toLocaleTimeString();
   }
 
   render () {
@@ -118,7 +134,7 @@ class App extends Component {
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mr-auto"/>
             <Form> 
-              <Button onClick={this.updateCAs.bind(this)}>Refresh</Button>
+              {/* <Button onClick={this.updateCAs.bind(this)}>Refresh</Button> */}
             </Form>
           </Navbar.Collapse>
         </Navbar>
@@ -128,14 +144,17 @@ class App extends Component {
               <Row>
                 <Col>
                   <Form.Group as={Row} controlId="venues">
-                    <Form.Label column sm="2">Venues</Form.Label>
-                    <Col sm="10">
+                    <Form.Label column sm="2" className="mt-3">Venues</Form.Label>
+                    <Col sm="7" className="mt-3">
                       <Form.Control as="select" onChange={this.handleVenueChange.bind(this)}>
                         <option value="all">All</option>
                         {this.state.venues.map((venue) => (
-                          <option key={venue} value={venue}>{venue}</option>
+                          <option key={venue} value={venue}>{ca_names.default[venue]? ca_names.default[venue]: venue}</option>
                         ))}
                       </Form.Control>
+                    </Col>
+                    <Col sm="3" className="mt-3">
+                      <Button onClick={this.handleClear.bind(this)} block>Clear</Button>
                     </Col>
                   </Form.Group>
                 </Col>
@@ -145,27 +164,69 @@ class App extends Component {
             <Table striped bordered hover>
               <thead>
                 <tr>
-                  <th className="pointer" onClick={e => this.onSort(e, 'Name')}>Name</th>
-                  <th className="pointer" onClick={e => this.onSort(e, 'Status')}>Status</th>
+                  <th className="pointer" onClick={e => this.onSort(e, 'Name')}>
+                    <Row>
+                      <Col>
+                        Name 
+                      </Col>
+                      <Col className="right-icon">
+                        <FontAwesomeIcon icon={faSort} />
+                      </Col>
+                    </Row>
+                  </th>
+                  <th className="pointer" onClick={e => this.onSort(e, 'Status')}>
+                    <Row>
+                      <Col>
+                        Status 
+                      </Col>
+                      <Col className="right-icon">
+                        <FontAwesomeIcon icon={faSort} />
+                      </Col>
+                    </Row>
+                  </th>
+                  <th className="pointer" onClick={e => this.onSort(e, 'Update')}>
+                    <Row>
+                      <Col>
+                        Updated
+                      </Col>
+                      <Col className="right-icon">
+                        <FontAwesomeIcon icon={faSort} />
+                      </Col>
+                    </Row>
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {this.state.filteredAgents.map((row, index) => (
                   <tr key={index}>
-                    <td>{row.Name}</td>
-                    <td>{this.normaliseStatus(row.Status)}</td>
+                    <td>{ca_names.default[row.Name]? ca_names.default[row.Name]: row.Name}</td>
+                    <td>
+                      <Row>
+                        <Col>
+                          {this.normaliseStatus(row.Status)}
+                        </Col>
+                        <Col>
+                          <svg height="20" width="20" class="blinking">
+                            {row.Status === "AGENTS.STATUS.CAPTURING"?
+                              <circle cx="10" cy="10" r="10" fill="red" />
+                              : <></>
+                            }
+                          </svg>
+                        </Col>
+                      </Row>
+                    </td>
+                    <td>{this.normaliseDate(row.Update)}</td>
                   </tr>
                 ))}
               </tbody>
             </Table> 
           </Container>
-          <Row>
-            <Col>
-
+          <Row className="footer">
+            <Col/>
+            <Col className="mt-5 mb-5">
+              @ Univerity of Cape Town. All rights reserved.
             </Col>
-            <Col>
-            
-            </Col>
+            <Col/>
           </Row>
         </div>
       </div>
