@@ -104,12 +104,14 @@ class App extends Component {
     
     this.setState({
       filteredAgents: selectedVenue === "all"? this.state.agents.results: filtered,
+      venueSelected: selectedVenue,
     })
   }
 
   handleClear() {    
     this.setState({
       filteredAgents: this.state.agents.results,
+      venueSelected: "all"
     })
   }
 
@@ -146,7 +148,7 @@ class App extends Component {
                   <Form.Group as={Row} controlId="venues">
                     <Form.Label column sm="2" className="mt-3">Venues</Form.Label>
                     <Col sm="7" className="mt-3">
-                      <Form.Control as="select" onChange={this.handleVenueChange.bind(this)}>
+                      <Form.Control as="select" value={this.state.venueSelected ? this.state.venueSelected : 'all'} onChange={this.handleVenueChange.bind(this)}>
                         <option value="all">All</option>
                         {this.state.venues.map((venue) => (
                           <option key={venue} value={venue}>{ca_names.default[venue]? ca_names.default[venue]: venue}</option>
