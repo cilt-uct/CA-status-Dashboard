@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from config import DEBUG_MODE, SECRET, HOSTS_ALLOWED, WHITELIST
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,12 +22,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '92yv4op8w0@tk6ezb0@6ie!x(@2r@9ukn-a(1y=^5wc=-pb64j'
+SECRET_KEY = SECRET
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = DEBUG_MODE
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = HOSTS_ALLOWED
 
 
 # Application definition
@@ -52,9 +54,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-CORS_ORIGIN_WHITELIST = [
-    'localhost', 'localhost:3300', '127.0.0.1:3300', '192.168.3.2:3300'
-]
+CORS_ORIGIN_WHITELIST = WHITELIST
 
 ROOT_URLCONF = 'backend.urls'
 

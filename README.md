@@ -24,17 +24,9 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ## Create credentials file in the backend
 
-Create a file called config.py in the src folder and copy and past the text below replaced "testing" with appropriate media credenitals :
-
-```json
-DIGEST_AUTH = {
-    "username": "testing",
-    "password": "testing"
-}
-
-CAPTURE_AGENT_URL = "https://stable.opencast.org/capture-admin/agents.json"
-```
+Create a file called config.py by copying config-dist.py and replacing the placeholders with appropriate variebles.
 
 ## Starting up the backend
 
-Run python3 manage.py runserver
+Run pip install on the requirements.txt. After the install is complete, start the django server.
+Run python3 manage.py runserver.

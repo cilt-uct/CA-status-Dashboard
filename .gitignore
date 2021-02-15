@@ -23,6 +23,7 @@ yarn-debug.log*
 yarn-error.log*
 
 config.py
+config.json
 __pycache__
 db.*
 .eslintcache
