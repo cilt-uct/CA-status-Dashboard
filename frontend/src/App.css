@@ -12,6 +12,29 @@
   }
 }
 
+.arrow {
+  border: solid black;
+  border-width: 0 3px 3px 0;
+  padding: 3px;
+  display: none;
+  position: relative;
+  float: right;
+  top: 10px;
+}
+  
+th.up .arrow {
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
+  display: inline-block;
+}
+
+th.down .arrow {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  display: inline-block;
+  top: 8px;
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -48,6 +71,8 @@
 .footer {
   background-color: grey;
   color: white;
+  margin-right: 0px;
+  text-align: center;
 }
 
 .blinking {

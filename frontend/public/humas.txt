@@ -1,0 +1,14 @@
+/* TEAM */
+Your title: CILT - LT Team
+Site: http://www.cilt.uct.ac.za/
+Repo: https://github.com/cilt-uct/CA-status-Dashboard
+Location: Cape Town, South Africa
+
+/* THANKS */
+Name: Opencast (https://github.com/opencast/)
+
+/* SITE */
+Last update: 2021/02/17
+Standards: HTML5, CSS3
+Components: React, Django
+Software: Shows the status of all the capture agents in Opencast
