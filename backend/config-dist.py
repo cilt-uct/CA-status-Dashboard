@@ -5,6 +5,8 @@ DIGEST_AUTH = {
 
 CAPTURE_AGENT_URL = "https://stable.opencast.org/capture-admin/agents.json"
 
+CAPTURE_AGENT_NAMES_URL = "https://stable.opencast.org/static/capture_agent_names.json"
+
 DEBUG_MODE = True
 
 SECRET = "xxxxxx"

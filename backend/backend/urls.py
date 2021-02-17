@@ -20,4 +20,5 @@ from agents import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(r'agents', views.Agents.as_view(), name="agents"),
+    path(r'names', views.AgentNames.as_view(), name="names"),
 ]

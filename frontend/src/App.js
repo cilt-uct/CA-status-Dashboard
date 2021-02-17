@@ -10,9 +10,6 @@ import Table from 'react-bootstrap/Table'
 import Image from 'react-bootstrap/Image'
 import heirarchy from './heirarchy.js'
 import * as config from './config.json';
-import * as ca_names from './caNames.json';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSort } from '@fortawesome/free-solid-svg-icons'
 import './App.css';
 
 class App extends Component { 
@@ -22,17 +19,20 @@ class App extends Component {
     filteredAgents: [],
     venues: [],
     statuses: [],
+    ca_names: [],
     venueSelected: "all",
     statusSelected: "all",
-    sort: "",
+    sort: "desc",
+    sortCol: "Status"
   }
   
   async componentDidMount() {
 
     try {
 
-      await this.updateCAs()
-
+      await this.updateAgentNames();
+      await this.updateCAs();
+      
       setInterval(async () => {
         await this.updateCAs();
       }, 60000);
@@ -42,6 +42,7 @@ class App extends Component {
     }
   }
 
+  // Get the capture agent status - filter and sort the results
   async updateCAs() {
     var agents = [];
 
@@ -76,21 +77,53 @@ class App extends Component {
     });
   }
 
+  // Get the names of the capture agents
+  async updateAgentNames() {
+    var agent_names = [];
+
+    var requestOptions = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    };
+
+    await fetch(config.names_endpoint, requestOptions)
+      .then(response => response.text())
+      .then(result => {agent_names = JSON.parse(result)})
+      .catch(error => console.log('error', error));
+
+    this.setState({
+        ca_names: agent_names
+    });
+  }
+
+  getAgentName(name) {
+    return this.state.ca_names[name] ? this.state.ca_names[name] : name;
+  }
+
   onSort(event, sortKey){
     const data = this.state.filteredAgents;
-    var currentSort = this.state.sort;
+    var currentSort = this.state.sortCol === sortKey ? this.state.sort : "asc";
+    this.setState({sortCol: sortKey})
 
-    if(currentSort === "" || currentSort === "asc") {
+    if (currentSort === "" || currentSort === "asc") {
       data.sort((a,b) => a[sortKey].localeCompare(b[sortKey]))
       this.setState({sort: "desc"})
     }
 
-    if(currentSort === "desc") {
+    if (currentSort === "desc") {
       data.sort((a,b) => b[sortKey].localeCompare(a[sortKey]))
       this.setState({sort: "asc"})
     }
 
     this.setState({data})
+  }
+
+  getClassNamesFor(name) {
+    var result = ["pointer"];
+    result.push(this.state.sortCol === name ? (this.state.sort === "asc" ? "up" : "down") : null);
+    return result.join(' ');
   }
 
   handleVenueChange(e) {
@@ -130,7 +163,7 @@ class App extends Component {
       <div className="App">
         <Navbar id="" bg="light" expand="lg" sticky="top">
           <Navbar.Brand href="/"> 
-            <Image id="uct-logo" src="images/UCT_high_res.gif" width="300"/>
+            <Image id="uct-logo" src="images/UCT-logo.png" width="300"/>
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
@@ -146,12 +179,12 @@ class App extends Component {
               <Row>
                 <Col>
                   <Form.Group as={Row} controlId="venues">
-                    <Form.Label column sm="2" className="mt-3">Venues</Form.Label>
-                    <Col sm="7" className="mt-3">
+                    <Form.Label column sm="1" className="mt-3">Venues</Form.Label>
+                    <Col sm="8" className="mt-3">
                       <Form.Control as="select" value={this.state.venueSelected ? this.state.venueSelected : 'all'} onChange={this.handleVenueChange.bind(this)}>
                         <option value="all">All</option>
                         {this.state.venues.map((venue) => (
-                          <option key={venue} value={venue}>{ca_names.default[venue]? ca_names.default[venue]: venue}</option>
+                          <option key={venue} value={venue}>{this.getAgentName(venue)}</option>
                         ))}
                       </Form.Control>
                     </Col>
@@ -166,33 +199,27 @@ class App extends Component {
             <Table striped bordered hover>
               <thead>
                 <tr>
-                  <th className="pointer" onClick={e => this.onSort(e, 'Name')}>
+                  <th className={this.getClassNamesFor('Name')} onClick={e => this.onSort(e, 'Name')}>
                     <Row>
                       <Col>
                         Name 
-                      </Col>
-                      <Col className="right-icon">
-                        <FontAwesomeIcon icon={faSort} />
+                        <i className="arrow"></i>
                       </Col>
                     </Row>
                   </th>
-                  <th className="pointer" onClick={e => this.onSort(e, 'Status')}>
+                  <th className={this.getClassNamesFor('Status')} onClick={e => this.onSort(e, 'Status')}>
                     <Row>
                       <Col>
-                        Status 
-                      </Col>
-                      <Col className="right-icon">
-                        <FontAwesomeIcon icon={faSort} />
+                        Status
+                        <i className="arrow"></i>
                       </Col>
                     </Row>
                   </th>
-                  <th className="pointer" onClick={e => this.onSort(e, 'Update')}>
+                  <th className={this.getClassNamesFor('Update')} onClick={e => this.onSort(e, 'Update')}>
                     <Row>
                       <Col>
-                        Updated
-                      </Col>
-                      <Col className="right-icon">
-                        <FontAwesomeIcon icon={faSort} />
+                        Updated 
+                        <i className="arrow"></i>
                       </Col>
                     </Row>
                   </th>
@@ -201,14 +228,14 @@ class App extends Component {
               <tbody>
                 {this.state.filteredAgents.map((row, index) => (
                   <tr key={index}>
-                    <td>{ca_names.default[row.Name]? ca_names.default[row.Name]: row.Name}</td>
+                    <td>{this.getAgentName(row.Name)}</td>
                     <td>
                       <Row>
                         <Col>
                           {this.normaliseStatus(row.Status)}
                         </Col>
                         <Col>
-                          <svg height="20" width="20" class="blinking">
+                          <svg height="20" width="20" className="blinking">
                             {row.Status === "AGENTS.STATUS.CAPTURING"?
                               <circle cx="10" cy="10" r="10" fill="red" />
                               : <></>
@@ -224,11 +251,9 @@ class App extends Component {
             </Table> 
           </Container>
           <Row className="footer">
-            <Col/>
             <Col className="mt-5 mb-5">
               @ Univerity of Cape Town. All rights reserved.
             </Col>
-            <Col/>
           </Row>
         </div>
       </div>
