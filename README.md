@@ -9,6 +9,7 @@ Clone the repo:
 
 ## Starting up the backend (Django)
 
+### Running in development mode
 ```
 cd CA-status-Dashboard/backend
 pip install -r requirements.txt
@@ -21,6 +22,35 @@ Start the server:
 ```
 python3 manage.py runserver
 ```
+
+### Running in production mode
+
+Some prerequisites if running on new server:
+* Ensure supervisor and nginx are installed on the server.
+* Ensure you have a python virtual environment and activate. (https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/).
+* Install gunicon for the project: in the project directory `pip install gunicorn`.
+* Test run: `gunicorn --bind 0.0.0.0:8888 backend.wsgi`, after test: `deactivate`
+* Create a supervisor file: `nano /etc/supervisor/conf.d/gunicorn.conf`
+
+```
+[program:backend]
+directory=/path/to/backend
+command=/path/to/envs/backend/bin/gunicorn backend.wsgi:application --workers 3 --bind 127.0.0.1:8888 --log-level info;
+stdout_logfile = /path/to/backend/logs/access.log
+stderr_logfile = /path/to/backend/logs/error.log
+stdout_logfile_maxbytes=5000000
+stderr_logfile_maxbytes=5000000
+stdout_logfile_backups=100000
+stderr_logfile_backups=100000
+autostart=true
+autorestart=true
+startsecs=10
+stopasgroup=true
+priority=99
+```
+
+* To update supervisor: `sudo supervisorctl reread` and `sudo supervisorctl update`.
+* To run `sudo supervisorctl start backend`
 
 ## Starting up the frontend (Django)
 
