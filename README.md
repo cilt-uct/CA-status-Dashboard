@@ -1,5 +1,7 @@
 # Capture Agent Status Dashboard
 
+This has been replaced by [docker-ca-status-dashboard](https://github.com/cilt-uct/docker-ca-status-dashboard).
+
 The Capture Agent Status Dashboard displays the current status of all the Capture Agents (CA) connected to Opencast. This will indicate if a CA is idle, offline, and/or capturing. 
 
 The UI allows for sorting on the column headings and filtering to a CA using the dropdown.
